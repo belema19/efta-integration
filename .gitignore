@@ -1,3 +1,7 @@
 processed-data/
 
 raw-data/
+
+images/
+
+__pycache__/

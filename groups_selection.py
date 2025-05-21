@@ -1,3 +1,11 @@
+"""
+    This module was used to select the control groups,
+    for this means:
+    1. Identifies top hs4 for EFTA.
+    2. Identifies top partners for hs4 codes.
+    3. Compare tendencies to select control groups.
+"""
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -5,7 +13,7 @@ import seaborn as sns
 import os
 
 PATH = 'processed-data/'
-FILE_NAME = 'hs4_20012011.csv'
+FILE_NAME = 'trade_20012022.csv'
 COLS = {
     'refPeriodId': 'Year',
     'reporterDesc': 'Flow',
@@ -24,16 +32,26 @@ def create_dataframe() -> pd.DataFrame:
     df.rename(columns=COLS, inplace=True)
     return df   
 
-def filter_dataframe() -> pd.DataFrame:
-    """Excludes World entries in col Partners"""
-    df = create_dataframe()
-    df = df.query('Partner != "World"')
+def filter_dataframe(dataframe=pd.DataFrame()) -> pd.DataFrame:
+    """Selects HSCode's first 4 digits"""
+    if dataframe is pd.DataFrame.empty:
+        df = create_dataframe()
+    else:
+        df = dataframe
+
     df['HSCode'] = df['HSCode'].astype('str').str.slice(0, 4)
     return df 
+
+def prepare_dataframe():
+    """Filter for selecting 2001-2011 period"""
+    df = filter_dataframe()
+    df = df.query('Year <= 2011')
+    df = df.query('Partner != "World"')
+    return df
   
 def group_dataframe() -> pd.DataFrame:
     """Groups by Partner, HSCode and Year"""
-    df = filter_dataframe()
+    df = prepare_dataframe()
     df = df.groupby(['Partner', 'HSCode', 'Year'])['FobValue'].sum()\
         .reset_index()
     return df
@@ -132,4 +150,4 @@ def single_graphics() -> None:
         plt.close(fig)
 
 if __name__ == '__main__':
-    ...
+    print(f'Executing {__name__}')

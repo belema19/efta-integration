@@ -1,9 +1,11 @@
+"""This module creates an unified csv from others csv"""
+
 import os
 import pandas as pd
 
 PATH = 'raw-data/'
 DEST_PATH = 'processed-data/'
-FILE_NAME = 'hs4_20012011.csv'
+FILE_NAME = 'trade_20012022.csv'
 COLS = ['refPeriodId', 'reporterDesc', 'partnerISO', 'isOriginalClassification', 'fobvalue']
 
 def get_files() -> list[str]:
