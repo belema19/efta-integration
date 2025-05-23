@@ -14,6 +14,7 @@ def initialize_dataframe():
     """read and select the HS4 codes"""
     df = create_dataframe()
     df['HSCode'] = df['HSCode'].astype('str').str.slice(0, 4)
+    df = df.query('HSCode in ["7108", "7112", "2709", "3212", "3004"]')
     return df
 
 def filter_dataframe():
@@ -59,5 +60,5 @@ def save_main_df():
     df.to_csv(DEST_PATH, index=False)
 
 if __name__ == '__main__':
-    print(f'Executing {__name__}')
+    print('Executing main.py')
     save_main_df()
