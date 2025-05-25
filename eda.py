@@ -30,11 +30,17 @@ def translate_log_transform(grouped_df:pd.DataFrame) -> dict:
     ref_dic = {k: np.expm1(k) for k in range(1, 25)} 
     return ref_dic
     
-def group_dataframe():
+def group_dataframe(groups:list[str]) -> pd.Series:
     df = initialize()
-    grouped_df = df.groupby(['Year', 'Partner', 'HSCode', 'Flow'], observed=False)['RealValue']\
-        .sum().reset_index()
+    grouped_df = df.groupby(groups, observed=False)['RealValue']\
+        .sum()
     return grouped_df
+
+def get_pct_change(grouped_df:pd.Series, periods:int) -> pd.Series:
+    s = grouped_df
+    s = s.pct_change(periods=periods).fillna(0)
+    return s
+
 
 
 
@@ -145,7 +151,8 @@ def bivariate_distribution():
 
 # --- Tendencias ---
 def simple_total_tendencies():
-    df = group_dataframe()
+    df = group_dataframe(['Year', 'Partner', 'HSCode', 'Flow'])
+    df = df.reset_index()
     df = log_transform(df)
 
     switz = df.query('Partner == "Switzerland"')
@@ -177,7 +184,8 @@ def simple_total_tendencies():
         plt.close()
 
 def simple_flow_tendencies():
-    df = group_dataframe()
+    df = group_dataframe(['Year', 'Partner', 'HSCode', 'Flow'])
+    df = df.reset_index()
     df = log_transform(df)
 
     switz = df.query('Partner == "Switzerland"')
@@ -209,7 +217,8 @@ def simple_flow_tendencies():
         plt.close()
 
 def complex_total_tendencies():
-    df = group_dataframe()
+    df = group_dataframe(['Year', 'Partner', 'HSCode', 'Flow'])
+    df = df.reset_index()
     df = log_transform(df)
 
     switz = df.query('Partner == "Switzerland"')
@@ -241,7 +250,8 @@ def complex_total_tendencies():
         plt.close()
 
 def complex_flow_tendencies():
-    df = group_dataframe()
+    df = group_dataframe(['Year', 'Partner', 'HSCode', 'Flow'])
+    df = df.reset_index()
     df = log_transform(df)
 
     switz = df.query('Partner == "Switzerland"')
@@ -312,6 +322,88 @@ def complex_flow_tendencies():
         plt.savefig(f'images/tendencies/complex/flow/tencomflo_{partner}.png')
         plt.show()
         plt.close()
+    
+    
+
+# Growth Rates
+def simple_growth_rate():
+
+    s = group_dataframe(['Year', 'Partner'])
+    pct_change = get_pct_change(s, 17).reset_index()
+    pct_change.rename(columns={'RealValue': 'GrowthRate'}, inplace=True)
+    
+    switz = pct_change.query('Partner == "Switzerland"')
+    pre_switz = switz.query('Year <= 2011')
+    post_switz = switz.query('Year >= 2012')
+    
+    partners = pct_change['Partner'].unique()
+
+    for partner in partners:
+
+        pre_df = pct_change.query(f'(Partner == "{partner}") & (Year <= 2011)')
+        post_df = pct_change.query(f'(Partner == "{partner}") & (Year >= 2012)')
+
+        fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(20, 12), layout='constrained')
+        fig.suptitle('Growth Rates')
+
+        ax00, ax01, ax10, ax11 = axs.flat
+
+        sns.lineplot(x=pre_df['Year'], y=pre_df['GrowthRate'], errorbar=None, ax=ax00)
+        sns.lineplot(x=pre_switz['Year'], y=pre_switz['GrowthRate'], errorbar=None, ax=ax01)
+
+        sns.lineplot(x=post_df['Year'], y=post_df['GrowthRate'], errorbar=None, ax=ax10)
+        sns.lineplot(x=post_switz['Year'], y=post_switz['GrowthRate'], errorbar=None, ax=ax11)
+
+        ax00.set_title(f'Pre TLC {partner}')
+        ax10.set_title(f'Post TLC {partner}')
+
+        ax01.set_title('Pre TLC Switzerland')
+        ax11.set_title('Post TLC Switzerland')
+
+        plt.savefig(f'images/growth-rates/simple/groratsim_{partner}.png')
+        plt.show()
+        plt.close()
+
+def complex_growth_rate():
+
+    s = group_dataframe(['Year', 'Partner', 'HSCode'])
+    pct_change = get_pct_change(s, 85).reset_index()
+    pct_change.replace([np.inf, -np.inf], 0, inplace=True)
+    pct_change.rename(columns={'RealValue': 'GrowthRate'}, inplace=True)
+    
+    switz = pct_change.query('Partner == "Switzerland"')
+    pre_switz = switz.query('Year <= 2011')
+    post_switz = switz.query('Year >= 2012')
+    
+    partners = pct_change['Partner'].unique()
+
+    for partner in partners:
+
+        pre_df = pct_change.query(f'(Partner == "{partner}") & (Year <= 2011)')
+        post_df = pct_change.query(f'(Partner == "{partner}") & (Year >= 2012)')
+
+        fig, axs = plt.subplots(nrows=2, ncols=2, figsize=(20, 12), layout='constrained')
+        fig.suptitle('Growth Rates')
+
+        ax00, ax01, ax10, ax11 = axs.flat
+
+        sns.lineplot(x=pre_df['Year'], y=pre_df['GrowthRate'], hue=pre_df['HSCode'], errorbar=None, ax=ax00)
+        sns.lineplot(x=pre_switz['Year'], y=pre_switz['GrowthRate'], hue=pre_switz['HSCode'], errorbar=None, ax=ax01)
+
+        sns.lineplot(x=post_df['Year'], y=post_df['GrowthRate'], hue=post_df['HSCode'], errorbar=None, ax=ax10)
+        sns.lineplot(x=post_switz['Year'], y=post_switz['GrowthRate'], hue=post_switz['HSCode'], errorbar=None, ax=ax11)
+
+        ax00.set_title(f'Pre TLC {partner}')
+        ax10.set_title(f'Post TLC {partner}')
+
+        ax01.set_title('Pre TLC Switzerland')
+        ax11.set_title('Post TLC Switzerland')
+
+        plt.savefig(f'images/growth-rates/complex/groratcom_{partner}.png')
+        plt.show()
+        plt.close()
+
+    
 
 
 if __name__ == '__main__':
