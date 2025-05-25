@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.patches as mpatches
 
 DB = 'processed-data/main_df.csv'
 DTYPES = {
@@ -39,61 +40,103 @@ def group_dataframe():
 def unidistributions_simple():
     df = initialize()
     df = log_transform(df)
-    switz = df.query('Partner == "Switzerland"')
-    partners = df['Partner'].unique()
-    for partner in partners:
-        fig, ax = plt.subplots(nrows=1, ncols=2)
-        fig.suptitle('Distributions')
-        country_df = df[df['Partner'] == partner]
 
-        sns.histplot(x=country_df['LogRealValue'], stat='percent', bins=20, kde=True, ax=ax[0])
-        sns.histplot(x=switz['LogRealValue'], stat='percent', bins=20, kde=True, ax=ax[1])
-        ax[0].set_title(partner)
-        ax[1].set_title('Switzerland')
+    switz = df.query('Partner == "Switzerland"')
+    pre_switz = switz[switz['Year'] <= 2011]
+    post_switz = switz[switz['Year'] >= 2012]
+
+    partners = df['Partner'].unique()
+
+    for partner in partners:
+
+        fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(12, 8), layout='constrained')
+        fig.suptitle('Distributions')
+
+        pre_df = df[(df['Partner'] == partner) & (df['Year'] <= 2011)]
+        post_df = df[(df['Partner'] == partner) & (df['Year'] >= 2012)]
+        bins = 20
+        stat = 'count'
+
+        sns.histplot(x=pre_df['LogRealValue'], stat=stat, bins=bins, kde=True, ax=ax[0][0])
+        sns.histplot(x=pre_switz['LogRealValue'], stat=stat, bins=bins, kde=True, ax=ax[0][1])
+        sns.histplot(x=post_df['LogRealValue'], stat=stat, bins=bins, kde=True, ax=ax[1][0])
+        sns.histplot(x=post_switz['LogRealValue'], stat=stat, bins=bins, kde=True, ax=ax[1][1])
+
+        ax[0][0].set_title('Pre TLC ' + partner)
+        ax[0][1].set_title('Pre TLC Switzerland')
+        ax[1][0].set_title('Post TLC ' + partner)
+        ax[1][1].set_title('Post TLC Switzerland')
         
-        plt.tight_layout()
+        plt.savefig(f'images/unidistributions/simple/bins20/unisimb20_{partner}')
         plt.show()
-        plt.savefig(f'images/unidistributions/simple/bins20/udsb20_{partner}.png')
         plt.close()
 
 def unidistribution_complex():
     df = initialize()
     df = log_transform(df)
-    switz = df.query('Partner == "Switzerland"')
-    partners = df['Partner'].unique()
-    for partner in partners:
-        fig, ax = plt.subplots(nrows=1, ncols=2)
-        fig.suptitle('Distributions')
-        country_df = df[df['Partner'] == partner]
 
-        sns.histplot(x=country_df['LogRealValue'], hue=country_df['HSCode'], element='step', stat='percent', bins=20, kde=True, ax=ax[0])
-        sns.histplot(x=switz['LogRealValue'], hue=switz['HSCode'], element='step', stat='percent', bins=20, kde=True, ax=ax[1])
-        ax[0].set_title(partner)
-        ax[1].set_title('Switzerland')
+    switz = df.query('Partner == "Switzerland"')
+    pre_switz = switz[switz['Year'] <= 2011]
+    post_switz = switz[switz['Year'] >= 2012]
+
+    partners = df['Partner'].unique()
+
+    for partner in partners:
+
+        fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(12, 8), layout='constrained')
+        fig.suptitle('Distributions')
+
+        pre_df = df[(df['Partner'] == partner) & (df['Year'] <= 2011)]
+        post_df = df[(df['Partner'] == partner) & (df['Year'] >= 2012)]
+        bins = 20
+        stat = 'count'
+
+        sns.histplot(x=pre_df['LogRealValue'], hue=pre_df['HSCode'], element='step', stat=stat, bins=bins, kde=True, ax=ax[0][0])
+        sns.histplot(x=pre_switz['LogRealValue'], hue=pre_switz['HSCode'], element='step', stat=stat, bins=bins, kde=True, ax=ax[0][1])
+        sns.histplot(x=post_df['LogRealValue'], hue=post_df['HSCode'], element='step', stat=stat, bins=bins, kde=True, ax=ax[1][0])
+        sns.histplot(x=post_switz['LogRealValue'], hue=post_switz['HSCode'], element='step', stat=stat, bins=bins, kde=True, ax=ax[1][1])
+
+        ax[0][0].set_title('Pre TLC ' + partner)
+        ax[0][1].set_title('Pre TLC Switzerland')
+        ax[1][0].set_title('Post TLC ' + partner)
+        ax[1][1].set_title('Post TLC Switzerland')
         
-        plt.tight_layout()
+        plt.savefig(f'images/unidistributions/complex/bins20/unicomb20_{partner}.png')
         plt.show()
-        plt.savefig(f'images/unidistributions/complex/bins20/udcb20_{partner}.png')
         plt.close()
 
 def bivariate_distribution():
     df = initialize()
     df = log_transform(df)
-    switz = df.query('Partner == "Switzerland"')
-    partners = df['Partner'].unique()
-    for partner in partners:
-        fig, ax = plt.subplots(nrows=1, ncols=2)
-        fig.suptitle('Distributions')
-        country_df = df[df['Partner'] == partner]
 
-        sns.histplot(x=country_df['LogRealValue'], y=country_df['HSCode'], cbar=True, ax=ax[0])
-        sns.histplot(x=switz['LogRealValue'], y=switz['HSCode'], cbar=True, ax=ax[1])
-        ax[0].set_title(partner)
-        ax[1].set_title('Switzerland')
+    switz = df.query('Partner == "Switzerland"')
+    pre_switz = switz[switz['Year'] <= 2011]
+    post_switz = switz[switz['Year'] >= 2012]
+
+    partners = df['Partner'].unique()
+
+    for partner in partners:
+
+        fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(12, 8), layout='constrained')
+        fig.suptitle('Heatmaps')
+
+        pre_df = df[(df['Partner'] == partner) & (df['Year'] <= 2011)]
+        post_df = df[(df['Partner'] == partner) & (df['Year'] >= 2012)]
+        bins = 20
+        stat = 'count'
+
+        sns.histplot(x=pre_df['LogRealValue'], y=pre_df['HSCode'], cbar=True, stat=stat, bins=bins, ax=ax[0][0])
+        sns.histplot(x=pre_switz['LogRealValue'], y=pre_switz['HSCode'], cbar=True, stat=stat, bins=bins, ax=ax[0][1])
+        sns.histplot(x=post_df['LogRealValue'], y=post_df['HSCode'], cbar=True, stat=stat, bins=bins, ax=ax[1][0])
+        sns.histplot(x=post_switz['LogRealValue'], y=post_switz['HSCode'], cbar=True, stat=stat, bins=bins, ax=ax[1][1])
+
+        ax[0][0].set_title('Pre TLC ' + partner)
+        ax[0][1].set_title('Pre TLC Switzerland')
+        ax[1][0].set_title('Post TLC ' + partner)
+        ax[1][1].set_title('Post TLC Switzerland')
         
-        plt.tight_layout()
+        plt.savefig(f'images/bidistributions/bins20/bidisb20_{partner}.png')
         plt.show()
-        plt.savefig(f'images/bidistributions/bidistribution_{partner}.png')
         plt.close()
 
 if __name__ == '__main__':
