@@ -3,9 +3,9 @@
 import os
 import pandas as pd
 
-PATH = 'raw-data/'
-DEST_PATH = 'processed-data/'
-FILE_NAME = 'trade_20012022.csv'
+PATH = '../data/raw-data/colombia/tophscodes/'
+DEST_PATH = '../data/processed-data/colombia/'
+FILE_NAME = 'trade20012022.csv'
 COLS = ['refPeriodId', 'reporterDesc', 'partnerISO', 'isOriginalClassification', 'fobvalue']
 
 def get_files() -> list[str]:
