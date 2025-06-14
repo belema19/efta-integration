@@ -3,8 +3,8 @@
 import os
 import pandas as pd
 
-PATH = '../data/raw-data/colombia/tophscodes/'
-DEST_PATH = '../data/processed-data/colombia/'
+PATH = '../data/raw-data/switzerland/tophscodes/'
+DEST_PATH = '../data/processed-data/switzerland/'
 FILE_NAME = 'trade20012022.csv'
 COLS = ['refPeriodId', 'reporterDesc', 'partnerISO', 'isOriginalClassification', 'fobvalue']
 

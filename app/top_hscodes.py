@@ -4,7 +4,7 @@ import os
 from initializer import filter_dataframe, COLS
 
 
-PATH = '../data/processed-data/colombia/'
+PATH = '../data/processed-data/colombia/allhscodes/'
 FILE_NAME = 'trade20012022.csv'
 
 

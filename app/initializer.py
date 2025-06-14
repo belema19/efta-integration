@@ -21,7 +21,7 @@ DTYPES = {
 }
 
 
-def initialize(path=None):
+def initialize(path=None) -> pd.DataFrame:
 
     if not path:
         path = DEFAULT
@@ -52,18 +52,18 @@ def format_dataframe(dataframe:pd.DataFrame, format='all', dtypes:dict={}, cols:
 
         case 'all':
 
-            df.rename(columns=cols, inplace=True)
+            df = df.rename(columns=cols)
             df = df.astype(dtypes)
             return df
 
         case 'cols':
 
-            df.rename(columns=cols, inplace=True)
+            df = df.rename(columns=cols)
             return df
 
         case 'dtypes':
 
-            df.astype(dtypes)
+            df = df.astype(dtypes)
             return df
         
         case _:

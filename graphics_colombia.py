@@ -1,10 +1,10 @@
-"""This module is for the exploratoy data analysis"""
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
 import seaborn as sns
 from app.initializer import initialize, filter_dataframe
+from tables_colombia import pivot_tables
 
 def log_transform(dfs:list[pd.DataFrame]=[]) -> list[pd.DataFrame]:
 
@@ -239,6 +239,60 @@ def graphic_tend_flow():
     #plt.savefig('images/tendencies/tend_flow.png', bbox_inches='tight')
     plt.show()
 
+
+def contingency_table(pivot_tables:list):
+
+    """Input: 2 pivot tables"""
+
+    fig, (ax0, ax1) = plt.subplots(
+        ncols=2,
+        figsize=(22,12),
+        layout='constrained'
+        )
+
+    color_pallete = sns.color_palette("ch:s=.25,rot=-.25", as_cmap=True)
+    font_axes = FontProperties(family='Times New Roman', weight='bold', size=14)
+    font_fig = FontProperties(family='Times New Roman', weight='bold', size=20)
+
+    fig.suptitle('Contingency Table', fontproperties=font_fig)
+
+    g1 = sns.heatmap(
+        pivot_tables[0], 
+        cmap=color_pallete,
+        annot=True,
+        vmin=0.1e9,
+        vmax=1e9,
+        linewidths=.7,
+        ax=ax0
+        )
+
+    g2 = sns.heatmap(pivot_tables[1],
+                     cmap=color_pallete,
+                     annot=True,
+                     vmin=0.1e9,
+                     vmax=1e9,
+                     linewidths=.7,
+                     ax=ax1
+                     )
+
+    ax0.set_title('Period 2001-2011', fontproperties=font_axes, pad=20)
+    ax0.set_xlabel('')
+    ax0.set_ylabel('')
+
+    ax1.set_title('Period 2012-2022', fontproperties=font_axes, pad=20)
+    ax1.set_xlabel('')
+    ax1.set_ylabel('')
+
+
 if __name__ == '__main__':
-    print('Executing eda.py')
-    d = np.expm1(range(25))
+
+    print('Executing graphics_colombia.py')
+
+    tables = pivot_tables(
+        index='HSCode',
+        columns='Partner',
+        values='RealValue',
+        aggfunc='sum'
+        )
+
+    contingency_table(tables)

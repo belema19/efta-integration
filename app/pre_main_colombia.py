@@ -27,12 +27,12 @@ def control_group() -> list[str]:
 
     df = compare()
 
-    control_group = df.query('8.9e8 < FobValue < 67e9')
+    control_group = df.query('9.65e8 < FobValue < 105e9')
 
     control_group = control_group['Partner'].values
 
     result = list(control_group)
-    result.extend(['Norway', 'Iceland', 'World'])
+    result.extend(['Norway', 'Iceland'])
 
     return result
 

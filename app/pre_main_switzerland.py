@@ -27,7 +27,7 @@ def control_group() -> list[str]:
 
     df = compare()
 
-    control_group = df.query('1e9 < FobValue < 1.86e9')
+    control_group = df.query('1e9 < FobValue < 1.9e9')
 
     control_group = control_group['Partner'].values
 
